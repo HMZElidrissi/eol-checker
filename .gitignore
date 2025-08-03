@@ -38,8 +38,5 @@ tmp/
 # macOS
 .DS_Store
 
-# Temporary files
-ROADMAP.md
-
 # Logs
 *.log
