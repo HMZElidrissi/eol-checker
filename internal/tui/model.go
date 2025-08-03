@@ -2,8 +2,9 @@ package tui
 
 import (
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
 	"time"
+
+	"github.com/charmbracelet/lipgloss"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -85,6 +86,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.spinner.Tick,
 					m.checkEOL(m.textInput.Value()),
 				)
+			} else if !m.loading && m.textInput.Value() == "" && (m.result != nil || m.err != nil) {
+				// Clear previous results when Enter is pressed on empty input
+				m.result = nil
+				m.err = nil
+				return m, nil
 			}
 		}
 
@@ -94,6 +100,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.err = msg.err
 		} else {
 			m.result = &msg.result
+			// Clear the input field after successful check to allow for another input
+			m.textInput.SetValue("")
 		}
 		return m, nil
 
@@ -152,13 +160,13 @@ func (m Model) performEOLCheck(imageName string) (models.EOLResult, error) {
 				latestCycle = &cycles[i]
 				continue
 			}
-			
+
 			// Compare release dates to find the most recent
 			if cycles[i].ReleaseDate > latestCycle.ReleaseDate {
 				latestCycle = &cycles[i]
 			}
 		}
-		
+
 		if latestCycle != nil {
 			overallLatest = latestCycle.Latest
 		}

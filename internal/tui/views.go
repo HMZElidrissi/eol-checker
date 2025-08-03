@@ -36,10 +36,15 @@ func RenderView(m Model) string {
 	// Result
 	if m.result != nil {
 		s.WriteString(RenderResult(*m.result))
+		s.WriteString("\n")
 	}
 
 	// Help
-	s.WriteString(HelpStyle.Render("Press Enter to check • Ctrl+C to quit"))
+	if m.result != nil || m.err != nil {
+		s.WriteString(HelpStyle.Render("Enter another image to check • Ctrl+C to quit"))
+	} else {
+		s.WriteString(HelpStyle.Render("Press Enter to check • Ctrl+C to quit"))
+	}
 
 	return s.String()
 }
